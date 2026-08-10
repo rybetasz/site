@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Nerepl2 — Modlar, projeler, oyun geliştirme ve teknik çalışmalar.">
+
+    <title>Nerepl2 | Mods & Projects</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #05070c;
+            --bg-light: #090d15;
+            --panel: rgba(12, 18, 30, 0.72);
+            --cyan: #36d9ff;
+            --blue: #168cff;
+            --purple: #8b5cff;
+            --text: #edf8ff;
+            --muted: #8496a8;
+            --border: rgba(54, 217, 255, 0.16);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(
+                    circle at 15% 10%,
+                    rgba(54, 217, 255, 0.10),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(139, 92, 255, 0.08),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    180deg,
+                    #04060a 0%,
+                    #080c14 50%,
+                    #04060a 100%
+                );
+
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* GRID BACKGROUND */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.20;
+
+            background-image:
+                linear-gradient(
+                    rgba(54, 217, 255, 0.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(54, 217, 255, 0.035) 1px,
+                    transparent 1px
+                );
+
+            background-size: 50px 50px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            width: min(1180px, calc(100% - 40px));
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+
+            background: rgba(4, 7, 13, 0.78);
+            backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid rgba(54, 217, 255, 0.10);
+        }
+
+        nav {
+            height: 74px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 4px;
+        }
+
+        .logo-symbol {
+            width: 34px;
+            height: 34px;
+
+            display: grid;
+            place-items: center;
+
+            border: 1px solid var(--cyan);
+
+            color: var(--cyan);
+
+            box-shadow:
+                0 0 20px rgba(54, 217, 255, 0.20);
+
+            transform: rotate(45deg);
+        }
+
+        .logo-symbol span {
+            transform: rotate(-45deg);
+            font-size: 11px;
+            letter-spacing: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .nav-links a {
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--cyan);
+        }
+
+        /* HERO */
+
+        .hero {
+            min-height: 850px;
+
+            display: flex;
+            align-items: center;
+
+            padding-top: 100px;
+
+            position: relative;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: var(--cyan);
+
+            font-size: 12px;
+            font-weight: 700;
+
+            letter-spacing: 4px;
+            text-transform: uppercase;
+
+            margin-bottom: 25px;
+        }
+
+        .eyebrow::before {
+            content: "";
+
+            width: 28px;
+            height: 1px;
+
+            background: var(--cyan);
+
+            box-shadow:
+                0 0 15px var(--cyan);
+        }
+
+        h1 {
+            max-width: 850px;
+
+            font-size: clamp(55px, 8vw, 105px);
+            line-height: 0.92;
+
+            letter-spacing: -5px;
+        }
+
+        h1 span {
+            color: var(--cyan);
+
+            text-shadow:
+                0 0 30px rgba(54, 217, 255, 0.25);
+        }
+
+        .hero-description {
+            max-width: 650px;
+
+            margin-top: 30px;
+
+            color: var(--muted);
+
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 14px;
+
+            margin-top: 35px;
+
+            flex-wrap: wrap;
+        }
+
+        .button {
+            padding: 14px 22px;
+
+            border: 1px solid var(--border);
+
+            background: rgba(10, 16, 27, 0.75);
+
+            font-size: 14px;
+            font-weight: 700;
+
+            transition: 0.25s;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+
+            border-color: var(--cyan);
+
+            box-shadow:
+                0 0 25px rgba(54, 217, 255, 0.10);
+        }
+
+        .button.primary {
+            background: var(--cyan);
+            color: #031017;
+
+            border-color: var(--cyan);
+        }
+
+        /* DECORATION */
+
+        .orb {
+            position: absolute;
+
+            width: 520px;
+            height: 520px;
+
+            right: -130px;
+            top: 160px;
+
+            border: 1px solid rgba(54, 217, 255, 0.12);
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 0 80px rgba(54, 217, 255, 0.015),
+                0 0 0 160px rgba(54, 217, 255, 0.008);
+
+            animation: rotate 30s linear infinite;
+        }
+
+        .orb::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 70px;
+
+            border: 1px dashed rgba(54, 217, 255, 0.12);
+
+            border-radius: 50%;
+        }
+
+        .orb::after {
+            content: "";
+
+            position: absolute;
+
+            width: 12px;
+            height: 12px;
+
+            top: 45px;
+            left: 50%;
+
+            background: var(--cyan);
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 25px var(--cyan);
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* SECTION */
+
+        section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            margin-bottom: 40px;
+        }
+
+        .section-label {
+            color: var(--cyan);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 4px;
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: clamp(32px, 5vw, 50px);
+
+            letter-spacing: -2px;
+        }
+
+        .section-description {
+            max-width: 600px;
+
+            color: var(--muted);
+
+            line-height: 1.7;
+
+            margin-top: 15px;
+        }
+
+        /* CARDS */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+        }
+
+        .card {
+            position: relative;
+
+            min-height: 260px;
+
+            padding: 28px;
+
+            border: 1px solid var(--border);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(15, 23, 38, 0.85),
+                    rgba(6, 10, 17, 0.85)
+                );
+
+            overflow: hidden;
+
+            transition: 0.3s;
+        }
+
+        .card::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: 90px;
+            height: 1px;
+
+            background: var(--cyan);
+
+            box-shadow:
+                0 0 15px var(--cyan);
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+
+            border-color:
+                rgba(54, 217, 255, 0.45);
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,0.25),
+                0 0 30px rgba(54,217,255,0.06);
+        }
+
+        .card-number {
+            color: var(--cyan);
+
+            font-size: 13px;
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 30px;
+        }
+
+        .card h3 {
+            font-size: 23px;
+
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: var(--muted);
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+        .card-link {
+            display: inline-block;
+
+            margin-top: 22px;
+
+            color: var(--cyan);
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* FEATURE */
+
+        .feature {
+            display: grid;
+
+            grid-template-columns:
+                1.3fr 0.7fr;
+
+            border: 1px solid var(--border);
+
+            background:
+                rgba(9, 14, 24, 0.75);
+        }
+
+        .feature-main {
+            min-height: 400px;
+
+            padding: 50px;
+
+            display: flex;
+            flex-direction: column;
+
+            justify-content: flex-end;
+
+            background:
+                radial-gradient(
+                    circle at 80% 30%,
+                    rgba(54, 217, 255, 0.18),
+                    transparent 30%
+                );
+        }
+
+        .feature-main h3 {
+            font-size: clamp(35px, 5vw, 60px);
+
+            letter-spacing: -3px;
+        }
+
+        .feature-main p {
+            max-width: 600px;
+
+            color: var(--muted);
+
+            line-height: 1.7;
+
+            margin-top: 15px;
+        }
+
+        .feature-side {
+            border-left: 1px solid var(--border);
+
+            padding: 30px;
+
+            display: flex;
+            flex-direction: column;
+
+            justify-content: center;
+
+            gap: 15px;
+        }
+
+        .stat {
+            padding: 18px;
+
+            border: 1px solid rgba(54,217,255,0.10);
+
+            background:
+                rgba(54,217,255,0.025);
+        }
+
+        .stat strong {
+            display: block;
+
+            color: var(--cyan);
+
+            font-size: 25px;
+
+            margin-bottom: 5px;
+        }
+
+        .stat span {
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        /* ABOUT */
+
+        .about {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 70px;
+
+            align-items: center;
+        }
+
+        .about p {
+            color: var(--muted);
+
+            line-height: 1.8;
+
+            margin-top: 18px;
+        }
+
+        /* TERMINAL */
+
+        .terminal {
+            border: 1px solid var(--border);
+
+            background: #04070c;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,0.3);
+        }
+
+        .terminal-header {
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 0 14px;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+
+            background: #315066;
+
+            border-radius: 50%;
+        }
+
+        .terminal-content {
+            padding: 28px;
+
+            font-family:
+                Consolas,
+                monospace;
+
+            font-size: 14px;
+
+            line-height: 2;
+        }
+
+        .terminal-muted {
+            color: #4f6c7b;
+        }
+
+        .terminal-cyan {
+            color: #68dfff;
+        }
+
+        .terminal-white {
+            color: white;
+        }
+
+        /* FOOTER */
+
+        footer {
+            padding: 35px 0;
+
+            border-top:
+                1px solid rgba(54,217,255,0.10);
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        .footer-content {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 850px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                min-height: 700px;
+            }
+
+            .orb {
+                opacity: 0.25;
+
+                right: -300px;
+            }
+
+            .cards,
+            .about,
+            .feature {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-side {
+                border-left: 0;
+
+                border-top:
+                    1px solid var(--border);
+            }
+
+            .feature-main {
+                min-height: 330px;
+
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 520px) {
+
+            .container {
+                width:
+                    calc(100% - 28px);
+            }
+
+            h1 {
+                font-size: 55px;
+
+                letter-spacing: -3px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            section {
+                padding: 75px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="container">
+
+        <nav>
+
+            <a href="#top" class="logo">
+
+                <div class="logo-symbol">
+                    <span>N2</span>
+                </div>
+
+                NEREPL2
+
+            </a>
+
+            <div class="nav-links">
+
+                <a href="#nerepl1">Nerepl1</a>
+
+                <a href="#mods">Modlar</a>
+
+                <a href="#projects">Projeler</a>
+
+                <a href="#about">Hakkımda</a>
+
+            </div>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main id="top">
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="orb"></div>
+
+        <div class="container">
+
+            <div class="hero-content">
+
+                <div class="eyebrow">
+                    DIGITAL WORKSHOP // 2026
+                </div>
+
+                <h1>
+
+                    Fikirleri
+
+                    <span>koda</span>,
+
+                    kodu
+
+                    projeye
+
+                    dönüştür.
+
+                </h1>
+
+                <p class="hero-description">
+
+                    Nerepl2; oyun modları, projeler,
+                    yazılım çalışmaları ve teknik
+                    geliştirmelerin merkezi.
+
+                </p>
+
+                <div class="buttons">
+
+                    <a
+                        href="#mods"
+                        class="button primary">
+
+                        Modları keşfet →
+
+                    </a>
+
+                    <a
+                        href="#projects"
+                        class="button">
+
+                        Projelere göz at
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- NEREPL1 -->
+
+    <section id="nerepl1">
+
+        <div class="container">
+
+            <div class="section-header">
+
+                <div class="section-label">
+                    01 // ORIGIN
+                </div>
+
+                <h2>Nerepl1</h2>
+
+                <p class="section-description">
+
+                    Nerepl1'in projeleri,
+                    çalışmaları ve arşivleri.
+
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-main">
+
+                    <div class="eyebrow">
+                        PROJECT ARCHIVE
+                    </div>
+
+                    <h3>
+                        Nerepl1'in
+                        dünyasına giriş.
+                    </h3>
+
+                    <p>
+
+                        Eski çalışmalar,
+                        projeler ve gelecekte
+                        eklenecek içerikler
+                        burada yer alacak.
+
+                    </p>
+
+                    <div class="buttons">
+
+                        <a
+                            href="#"
+                            class="button primary">
+
+                            Nerepl1'i görüntüle
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature-side">
+
+                    <div class="stat">
+
+                        <strong>NEREPL1</strong>
+
+                        <span>
+                            Proje ve arşiv
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <strong>MODS</strong>
+
+                        <span>
+                            Özel modifikasyonlar
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <strong>DEV</strong>
+
+                        <span>
+                            Aktif geliştirme
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MODS -->
+
+    <section id="mods">
+
+        <div class="container">
+
+            <div class="section-header">
+
+                <div class="section-label">
+                    02 // MODDING
+                </div>
+
+                <h2>Modlar</h2>
+
+                <p class="section-description">
+
+                    Oyun modifikasyonları,
+                    pluginler ve teknik çalışmalar.
+
+                </p>
+
+            </div>
+
+
+            <div class="cards">
+
+
+                <article class="card">
+
+                    <div class="card-number">
+                        MOD // 001
+                    </div>
+
+                    <h3>
+                        NFS Modları
+                    </h3>
+
+                    <p>
+
+                        Need for Speed serisi
+                        için geliştirilen modlar,
+                        araçlar ve oyun içi
+                        geliştirmeler.
+
+                    </p>
+
+                    <a
+                        href="#"
+                        class="card-link">
+
+                        Modları görüntüle →
+
+                    </a>
+
+                </article>
+
+
+                <article class="card">
+
+                    <div class="card-number">
+                        MOD // 002
+                    </div>
+
+                    <h3>
+                        Plugin & Tools
+                    </h3>
+
+                    <p>
+
+                        Oyunların sınırlarını
+                        genişleten pluginler,
+                        araçlar ve geliştirme
+                        yardımcıları.
+
+                    </p>
+
+                    <a
+                        href="#"
+                        class="card-link">
+
+                        Araçları görüntüle →
+
+                    </a>
+
+                </article>
+
+
+                <article class="card">
+
+                    <div class="card-number">
+                        MOD // 003
+                    </div>
+
+                    <h3>
+                        Releases
+                    </h3>
+
+                    <p>
+
+                        Yayınlanan sürümler,
+                        güncellemeler ve
+                        indirilebilir içerikler.
+
+                    </p>
+
+                    <a
+                        href="#"
+                        class="card-link">
+
+                        Sürümlere git →
+
+                    </a>
+
+                </article>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROJECTS -->
+
+    <section id="projects">
+
+        <div class="container">
+
+            <div class="section-header">
+
+                <div class="section-label">
+                    03 // DEVELOPMENT
+                </div>
+
+                <h2>Projeler</h2>
+
+                <p class="section-description">
+
+                    Devam eden ve tamamlanan
+                    yazılım, oyun ve teknoloji
+                    projeleri.
+
+                </p>
+
+            </div>
+
+
+            <div class="cards">
+
+
+                <article class="card">
+
+                    <div class="card-number">
+                        PROJECT // 001
+                    </div>
+
+                    <h3>
+                        Güner Production
+                    </h3>
+
+                    <p>
+
+                        Oyun geliştirme,
+                        içerik üretimi ve
+                        yaratıcı projelerin
+                        merkezi.
+
+                    </p>
+
+                    <a
+                        href="#"
+                        class="card-link">
+
+                        Projeyi görüntüle →
+
+                    </a>
+
+                </article>
+
+
+                <article class="card">
+
+                    <div class="card-number">
+                        PROJECT // 002
+                    </div>
+
+                    <h3>
+                        Game Development
+                    </h3>
+
+                    <p>
+
+                        Oyun mekanikleri,
+                        sistemler, modifikasyonlar
+                        ve deneysel çalışmalar.
+
+                    </p>
+
+                    <a
+                        href="#"
+                        class="card-link">
+
+                        Detaylara git →
+
+                    </a>
+
+                </article>
+
+
+                <article class="card">
+
+                    <div class="card-number">
+                        PROJECT // 003
+                    </div>
+
+                    <h3>
+                        Tools & Software
+                    </h3>
+
+                    <p>
+
+                        Geliştirme sürecini
+                        hızlandıran özel yazılımlar
+                        ve yardımcı araçlar.
+
+                    </p>
+
+                    <a
+                        href="#"
+                        class="card-link">
+
+                        Projeleri görüntüle →
+
+                    </a>
+
+                </article>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ABOUT -->
+
+    <section id="about">
+
+        <div class="container">
+
+            <div class="about">
+
+
+                <div>
+
+                    <div class="section-label">
+                        04 // IDENTITY
+                    </div>
+
+                    <h2>
+                        Hakkımda
+                    </h2>
+
+                    <p>
+
+                        Nerepl2, yaptığım projeleri,
+                        modları ve teknik çalışmalarımı
+                        tek bir yerde toplamak için
+                        oluşturduğum kişisel platform.
+
+                    </p>
+
+                    <p>
+
+                        Oyun modlama, yazılım geliştirme
+                        ve yeni fikirleri çalışan
+                        projelere dönüştürme üzerine
+                        çalışıyorum.
+
+                    </p>
+
+                    <div class="buttons">
+
+                        <a
+                            href="#"
+                            class="button">
+
+                            İletişim
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="terminal">
+
+                    <div class="terminal-header">
+
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+
+                    </div>
+
+
+                    <div class="terminal-content">
+
+                        <div class="terminal-muted">
+                            $ ./nerepl2 --status
+                        </div>
+
+                        <div class="terminal-white">
+                            system.status = ONLINE
+                        </div>
+
+                        <div class="terminal-cyan">
+                            mods.loaded = true
+                        </div>
+
+                        <div class="terminal-cyan">
+                            projects.active = true
+                        </div>
+
+                        <div class="terminal-cyan">
+                            creative.mode = ENABLED
+                        </div>
+
+                        <div class="terminal-muted">
+                            --------------------------------
+                        </div>
+
+                        <div>
+                            building_the_future<span class="terminal-white">...</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div class="container">
+
+        <div class="footer-content">
+
+            <span>
+                © 2026 Nerepl2. All rights reserved.
+            </span>
+
+            <span>
+                Built for mods, projects & ideas.
+            </span>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    // Basit scroll reveal efekti
+
+    const cards =
+        document.querySelectorAll(
+            ".card, .feature, .terminal"
+        );
+
+    const observer =
+        new IntersectionObserver(
+            entries => {
+
+                entries.forEach(entry => {
+
+                    if (entry.isIntersecting) {
+
+                        entry.target.style.opacity = "1";
+                        entry.target.style.transform =
+                            "translateY(0)";
+
+                    }
+
+                });
+
+            },
+            {
+                threshold: 0.12
+            }
+        );
+
+
+    cards.forEach(element => {
+
+        element.style.opacity = "0";
+
+        element.style.transform =
+            "translateY(25px)";
+
+        element.style.transition =
+            "opacity .7s ease, transform .7s ease";
+
+        observer.observe(element);
+
+    });
+
+</script>
+
+</body>
+</html>
