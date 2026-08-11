@@ -316,35 +316,37 @@ class ImageSlider {
                 .filter(image => image.length > 0);
 
         this.interval = 5000;
-
         this.currentIndex = 0;
-
         this.timer = null;
-
-        /*
-         * Aynı anda iki geçiş başlamasını engeller.
-         */
         this.isAnimating = false;
 
-        /*
-         * Slider elemanı yoksa çık.
-         */
-        if (!this.imageElement) {
+        if (!this.imageElement || !this.images.length) {
             return;
         }
 
         /*
-         * Resim yoksa çık.
+         * Slider alanının arka planının görünmesini engelle.
+         * Resimler geçiş boyunca her zaman birbirinin
+         * üzerinde bulunacak.
          */
-        if (!this.images.length) {
-            return;
+        if (this.imageContainer) {
+
+            const computed =
+                window.getComputedStyle(
+                    this.imageContainer
+                );
+
+            if (computed.position === "static") {
+                this.imageContainer.style.position =
+                    "relative";
+            }
+
+            this.imageContainer.style.overflow =
+                "hidden";
+
         }
 
-        /*
-         * Resimlerin önceden yüklenmesini başlat.
-         */
         this.preloadImages();
-
         this.initialize();
 
     }
@@ -358,9 +360,8 @@ class ImageSlider {
 
         this.images.forEach((src) => {
 
-            const preloadImage = new Image();
-
-            preloadImage.src = src;
+            const image = new Image();
+            image.src = src;
 
         });
 
@@ -368,7 +369,7 @@ class ImageSlider {
 
 
     /* =====================================================
-       RESMİ HAZIRLA
+       RESMİ TAM OLARAK HAZIRLA
     ===================================================== */
 
     loadImage(src) {
@@ -379,10 +380,6 @@ class ImageSlider {
 
             image.onload = () => {
 
-                /*
-                 * Tarayıcı destekliyorsa decode işleminin
-                 * tamamlanmasını bekle.
-                 */
                 if (typeof image.decode === "function") {
 
                     image.decode()
@@ -415,26 +412,47 @@ class ImageSlider {
 
 
     /* =====================================================
+       RESİM STİLİNİ AYARLA
+    ===================================================== */
+
+    setupImage(image, zIndex) {
+
+        image.style.position = "absolute";
+        image.style.left = "0";
+        image.style.top = "0";
+        image.style.width = "100%";
+        image.style.height = "100%";
+        image.style.objectFit = "cover";
+        image.style.margin = "0";
+        image.style.zIndex = String(zIndex);
+
+    }
+
+
+    /* =====================================================
        BAŞLAT
     ===================================================== */
 
     initialize() {
 
-        this.imageElement.src =
-            this.images[0];
-
-        this.imageElement.style.transform =
-            "translateX(0)";
+        this.setupImage(
+            this.imageElement,
+            1
+        );
 
         this.imageElement.style.transition =
             "none";
 
+        this.imageElement.style.transform =
+            "translateX(0)";
+
+        this.imageElement.src =
+            this.images[0];
+
         this.updateCounter();
 
         if (this.images.length > 1) {
-
             this.startAutoPlay();
-
         }
 
     }
@@ -451,29 +469,21 @@ class ImageSlider {
             !this.images.length ||
             this.isAnimating
         ) {
-
             return;
-
         }
 
         const nextSrc =
             this.images[this.currentIndex];
 
-        /*
-         * Yeni resim tamamen hazır olmadan
-         * mevcut resmi değiştirme.
-         */
         this.isAnimating = true;
-
         this.updateCounter();
 
         this.loadImage(nextSrc)
             .then((loadedImage) => {
 
                 /*
-                 * Yeni resmi ayrı bir img olarak oluştur.
-                 * Böylece eski resmin src'si değişirken
-                 * eski görüntünün tekrar görünmesi engellenir.
+                 * Yeni resmi doğrudan kullan.
+                 * Böylece tarayıcı yeniden yükleme yapmaz.
                  */
                 const nextImage =
                     loadedImage.cloneNode(false);
@@ -481,107 +491,41 @@ class ImageSlider {
                 nextImage.className =
                     this.imageElement.className;
 
+                this.setupImage(
+                    nextImage,
+                    2
+                );
+
                 /*
-                 * Yeni resmi mevcut resmin üzerine koy.
+                 * Yeni resim sağda bekliyor.
+                 * Eski resim tamamen kaplı olduğu için
+                 * arada siyah/boş alan oluşamaz.
                  */
-                nextImage.style.position =
-                    "absolute";
-
-                nextImage.style.left =
-                    "0";
-
-                nextImage.style.top =
-                    "0";
-
-                nextImage.style.width =
-                    "100%";
-
-                nextImage.style.height =
-                    "100%";
-
-                nextImage.style.objectFit =
-                    "cover";
-
-                nextImage.style.margin =
-                    "0";
+                nextImage.style.transition =
+                    "none";
 
                 nextImage.style.transform =
                     "translateX(100%)";
 
-                nextImage.style.transition =
+                this.imageElement.style.transition =
                     "none";
 
-                nextImage.style.zIndex =
-                    "2";
+                this.imageElement.style.transform =
+                    "translateX(0)";
+
+                this.imageContainer.appendChild(
+                    nextImage
+                );
 
                 /*
-                 * Mevcut resmi animasyonun altında tut.
-                 */
-                this.imageElement.style.position =
-                    "absolute";
-
-                this.imageElement.style.left =
-                    "0";
-
-                this.imageElement.style.top =
-                    "0";
-
-                this.imageElement.style.width =
-                    "100%";
-
-                this.imageElement.style.height =
-                    "100%";
-
-                this.imageElement.style.objectFit =
-                    "cover";
-
-                this.imageElement.style.margin =
-                    "0";
-
-                this.imageElement.style.zIndex =
-                    "1";
-
-                /*
-                 * İki resmin üst üste çalışması için
-                 * slider alanını hazırla.
-                 */
-                if (this.imageContainer) {
-
-                    const computed =
-                        window.getComputedStyle(
-                            this.imageContainer
-                        );
-
-                    if (computed.position === "static") {
-
-                        this.imageContainer.style.position =
-                            "relative";
-
-                    }
-
-                    this.imageContainer.style.overflow =
-                        "hidden";
-
-                    this.imageContainer.appendChild(
-                        nextImage
-                    );
-
-                } else {
-
-                    this.imageElement.parentElement
-                        .appendChild(nextImage);
-
-                }
-
-                /*
-                 * Başlangıç pozisyonunun uygulanmasını
-                 * tarayıcıya kesin olarak bildir.
+                 * Tarayıcının başlangıç pozisyonunu
+                 * kesin olarak uygulamasını sağla.
                  */
                 void nextImage.offsetWidth;
 
                 /*
-                 * Eski resim sola çıkarken,
-                 * yeni resim sağdan gelir.
+                 * İki resmi aynı anda hareket ettir.
+                 * Böylece biri çıkarken diğeri boşluğu kapatır.
                  */
                 this.imageElement.style.transition =
                     "transform 0.7s ease-in-out";
@@ -595,13 +539,10 @@ class ImageSlider {
                 nextImage.style.transform =
                     "translateX(0)";
 
-                /*
-                 * Animasyon tamamlandı.
-                 */
                 setTimeout(() => {
 
                     /*
-                     * Yeni resmi ana resim yap.
+                     * Yeni resmi ana img yap.
                      */
                     this.imageElement.src =
                         nextSrc;
@@ -611,27 +552,6 @@ class ImageSlider {
 
                     this.imageElement.style.transform =
                         "translateX(0)";
-
-                    this.imageElement.style.position =
-                        "absolute";
-
-                    this.imageElement.style.left =
-                        "0";
-
-                    this.imageElement.style.top =
-                        "0";
-
-                    this.imageElement.style.width =
-                        "100%";
-
-                    this.imageElement.style.height =
-                        "100%";
-
-                    this.imageElement.style.objectFit =
-                        "cover";
-
-                    this.imageElement.style.margin =
-                        "0";
 
                     this.imageElement.style.zIndex =
                         "1";
@@ -653,9 +573,6 @@ class ImageSlider {
                     error
                 );
 
-                /*
-                 * Hata durumunda slider kilitli kalmasın.
-                 */
                 this.isAnimating = false;
 
             });
@@ -708,9 +625,7 @@ class ImageSlider {
             this.currentIndex >=
             this.images.length
         ) {
-
             this.currentIndex = 0;
-
         }
 
         this.update();
@@ -734,10 +649,8 @@ class ImageSlider {
         this.currentIndex--;
 
         if (this.currentIndex < 0) {
-
             this.currentIndex =
                 this.images.length - 1;
-
         }
 
         this.update();
