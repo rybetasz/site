@@ -218,6 +218,14 @@ function initializeImageLazyLoading() {
          * öncelikli olarak yüklemesini sağlar.
          */
 
+        /*
+         * Slider resimleri lazy loading kullanmaz.
+         * Slider bunları kendisi önceden yükler.
+         */
+        if (image.closest(".detail-slider")) {
+            return;
+        }
+
         if (!image.hasAttribute("loading")) {
 
             image.setAttribute(
@@ -358,10 +366,25 @@ class ImageSlider {
 
     preloadImages() {
 
-        this.images.forEach((src) => {
+        /*
+         * Tüm slider resimlerini önceden indir ve decode et.
+         * Böylece ilk geçişte yeni resmin indirilmesini
+         * beklerken eski resim tekrar görünmez.
+         */
+        this.preloadedImages = this.images.map((src) => {
 
-            const image = new Image();
-            image.src = src;
+            return this.loadImage(src)
+                .catch((error) => {
+
+                    console.warn(
+                        "Slider resmi önceden yüklenemedi:",
+                        src,
+                        error
+                    );
+
+                    return null;
+
+                });
 
         });
 
@@ -446,14 +469,26 @@ class ImageSlider {
         this.imageElement.style.transform =
             "translateX(0)";
 
-        this.imageElement.src =
-            this.images[0];
+        /*
+         * İlk resmi de tamamen hazır olduktan sonra göster.
+         */
+        const preloadPromise =
+            Promise.all(
+                this.preloadedImages || []
+            );
 
-        this.updateCounter();
+        preloadPromise.then(() => {
 
-        if (this.images.length > 1) {
-            this.startAutoPlay();
-        }
+            this.imageElement.src =
+                this.images[0];
+
+            this.updateCounter();
+
+            if (this.images.length > 1) {
+                this.startAutoPlay();
+            }
+
+        });
 
     }
 
@@ -478,8 +513,25 @@ class ImageSlider {
         this.isAnimating = true;
         this.updateCounter();
 
-        this.loadImage(nextSrc)
+        /*
+         * Resim daha önce preload edildiyse hazır halini kullan.
+         * İlk kez yükleniyorsa loadImage ile bekle.
+         */
+        const imagePromise =
+            this.preloadedImages &&
+            this.preloadedImages[this.currentIndex]
+                ? this.preloadedImages[this.currentIndex]
+                : this.loadImage(nextSrc);
+
+        imagePromise
             .then((loadedImage) => {
+
+                if (!loadedImage) {
+                    throw new Error(
+                        "Slider resmi hazırlanamadı: " +
+                        nextSrc
+                    );
+                }
 
                 /*
                  * Yeni resmi doğrudan kullan.
