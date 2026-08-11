@@ -826,18 +826,50 @@ section {
 @media (max-width: 850px) {
 
     .navbar-container {
-        flex-wrap: wrap;
+        /*
+         * Masaüstünde 3 sütunlu grid (logo | menü | sosyal)
+         * kullanılıyor. Mobilde bunun yerine öğeleri
+         * alt alta (dikey) diziyoruz.
+         */
 
-        justify-content: center;
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        height: auto;
 
         padding: 18px 0;
+
+        gap: 14px;
     }
 
 
     .logo-link {
-        width: 100%;
+        justify-self: unset;
+
+        width: auto;
+
+        height: 60px;
 
         justify-content: center;
+    }
+
+
+    .logo {
+        position: static;
+
+        transform: none;
+
+        width: 60px;
+
+        height: 60px;
+    }
+
+
+    .logo:hover {
+        transform: scale(1.08);
     }
 
 
@@ -934,7 +966,6 @@ section {
 
 }
 
-```css
 /* =========================================================
    MODLAR - ANA PARENT
    ========================================================= */
@@ -1276,7 +1307,6 @@ section {
 
 }
 
-```css
 /* =========================================================
    PROJELER SAYFASI
    ========================================================= */
@@ -1691,7 +1721,6 @@ section {
 
 }
 
-```css id="6x8f2p"
 /* =========================================================
    DETAY SAYFALARI
    MOD + PROJE
@@ -2234,7 +2263,6 @@ section {
 
 }
 
-```css
 /* =========================================================
    ABOUT PAGE
    ========================================================= */
@@ -2971,7 +2999,6 @@ section {
 }
 
 
-```css
 /* =========================================================
    HABER LİSTESİ
 ========================================================= */
@@ -3319,7 +3346,6 @@ section {
         font-size: 15px;
     }
 }
-```
 
 
 
@@ -3414,7 +3440,6 @@ section {
 
 }
 
-```css
 /* =========================================================
    NEWS DETAIL PAGE
    ========================================================= */
@@ -3995,7 +4020,6 @@ section {
 
 }
 
-```css
 /* =========================================================
    CONTACT PAGE
    ========================================================= */
@@ -4462,6 +4486,15 @@ section {
 
     .contact-card h3 {
         font-size: 10px;
+    }
+
+
+    .contact-label {
+        font-size: 10px;
+
+        letter-spacing: 1.5px;
+
+        white-space: nowrap;
     }
 
 

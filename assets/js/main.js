@@ -341,7 +341,38 @@ class ImageSlider {
         }
 
 
+        /*
+         * Tüm slider resimlerini önceden
+         * tarayıcı önbelleğine yükle.
+         *
+         * Bunu yapmazsak, src değiştiğinde
+         * tarayıcı yeni resmi indirene kadar
+         * eski resmi göstermeye devam eder;
+         * bu da geçiş sırasında 1-2 saniye
+         * eski resmin görünmesine sebep olur.
+         */
+
+        this.preloadImages();
+
+
         this.initialize();
+
+    }
+
+
+    /* =====================================================
+       RESİMLERİ ÖNCEDEN YÜKLE
+    ===================================================== */
+
+    preloadImages() {
+
+        this.images.forEach(function (src) {
+
+            const preloadImage = new Image();
+
+            preloadImage.src = src;
+
+        });
 
     }
 
@@ -419,15 +450,16 @@ class ImageSlider {
                 "translateX(100%)";
 
 
-            this.imageElement.src =
+            const nextSrc =
                 this.images[this.currentIndex];
 
 
             /*
-             * Yeni resmi ekrana getir
+             * Ekrana getirme animasyonunu
+             * başlatan yardımcı fonksiyon.
              */
 
-            setTimeout(() => {
+            const slideIn = () => {
 
                 this.imageElement.style.transition =
                     "transform 0.7s ease-in-out";
@@ -435,7 +467,35 @@ class ImageSlider {
                 this.imageElement.style.transform =
                     "translateX(0)";
 
-            }, 50);
+            };
+
+
+            this.imageElement.src =
+                nextSrc;
+
+
+            /*
+             * Resim (önbellekten) zaten
+             * hazırsa direkt kaydır.
+             * Değilse gerçekten yüklenmesini
+             * bekle; böylece eski resim
+             * asla kaydırma animasyonunda
+             * görünmez.
+             */
+
+            if (this.imageElement.complete) {
+
+                setTimeout(slideIn, 50);
+
+            } else {
+
+                this.imageElement.addEventListener(
+                    "load",
+                    slideIn,
+                    { once: true }
+                );
+
+            }
 
 
         }, 700);
